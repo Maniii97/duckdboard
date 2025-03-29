@@ -9,16 +9,19 @@ import getCostData from "./api/getCostData";
 import getForecastData from "./api/getForecastData";
 import getUsageData from "./api/getUsageData";
 import { APIUsage, AWSServiceData, CostData } from "./types";
+import Loader from "./components/Loader";
 
 const App = () => {
   const [costData, setCostData] = useState<CostData[]>([]);
   const [forecastData, setForecastData] = useState<CostData[]>([]);
   const [apiUsageData, setApiUsageData] = useState<APIUsage[]>([]);
   const [awsServicesData, setAwsServicesData] = useState<AWSServiceData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const [costData, forecastData, apiUsageData, awsServicesData] =
           await Promise.all([
             getCostData(),
@@ -31,6 +34,7 @@ const App = () => {
         setForecastData(forecastData);
         setApiUsageData(apiUsageData);
         setAwsServicesData(awsServicesData);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error @App.tsx -> fetchData() " + error);
       }
@@ -57,11 +61,11 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
+      {isLoading && <Loader />}
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           Cloud Cost & Utilization Dashboard
         </h1>
-
         <div className="grid grid-cols-1 gap-8">
           <CostChart data={costData} title="Real-Time Cost vs Utilization" />
           <AWSServicesChart data={awsServicesData} />
