@@ -1,0 +1,79 @@
+import React, { useEffect, useState } from "react";
+import { CostChart } from "./components/CostChart";
+import { AWSServicesChart } from "./components/AWSServicesChart";
+import { APIUsageTable } from "./components/APIUsageTable";
+import { Chatbot } from "./components/Chatbot";
+import toast from "react-hot-toast";
+import getAwsData from "./api/getAwsData";
+import getCostData from "./api/getCostData";
+import getForecastData from "./api/getForecastData";
+import getUsageData from "./api/getUsageData";
+import { APIUsage, AWSServiceData, CostData } from "./types";
+
+const App = () => {
+  const [costData, setCostData] = useState<CostData[]>([]);
+  const [forecastData, setForecastData] = useState<CostData[]>([]);
+  const [apiUsageData, setApiUsageData] = useState<APIUsage[]>([]);
+  const [awsServicesData, setAwsServicesData] = useState<AWSServiceData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [costData, forecastData, apiUsageData, awsServicesData] =
+          await Promise.all([
+            getCostData(),
+            getForecastData(),
+            getUsageData(),
+            getAwsData(),
+          ]);
+
+        setCostData(costData);
+        setForecastData(forecastData);
+        setApiUsageData(apiUsageData);
+        setAwsServicesData(awsServicesData);
+      } catch (error) {
+        console.error("Error @App.tsx -> fetchData() " + error);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 300000); // Fetch data every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (costData.length > 0) {
+      const latestData = costData[costData.length - 1];
+      if (
+        latestData.utilization < 70 &&
+        latestData.aws + latestData.gcp + latestData.azure > 2000
+      ) {
+        toast.error("Cost Anomaly Detected: High costs with low utilization!", {
+          duration: 5000,
+        });
+      }
+    }
+  }, [costData]);
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+          Cloud Cost & Utilization Dashboard
+        </h1>
+
+        <div className="grid grid-cols-1 gap-8">
+          <CostChart data={costData} title="Real-Time Cost vs Utilization" />
+          <AWSServicesChart data={awsServicesData} />
+          <CostChart data={forecastData} title="Cost Forecast (Next 7 Days)" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <APIUsageTable data={apiUsageData} />
+            <Chatbot />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
