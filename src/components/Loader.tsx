@@ -1,6 +1,5 @@
 import { useLottie } from "lottie-react";
 import loader from "../lottie/loader.json";
-import React from "react";
 
 const Loader = () => {
   const options = {

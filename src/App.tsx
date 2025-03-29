@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CostChart } from "./components/CostChart";
 import { AWSServicesChart } from "./components/AWSServicesChart";
 import { APIUsageTable } from "./components/APIUsageTable";

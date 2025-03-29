@@ -25,7 +25,6 @@ export const AWSServicesChart: React.FC<Props> = ({ data }) => {
     data.reduce((acc, curr) => acc + curr.utilization, 0) / data.length;
 
   // Find the service with highest cost
-  const services = ["EC2", "S3", "Lambda", "RDS"];
   const serviceTotals = {
     EC2: data.reduce((acc, curr) => acc + curr.ec2, 0),
     S3: data.reduce((acc, curr) => acc + curr.s3, 0),
