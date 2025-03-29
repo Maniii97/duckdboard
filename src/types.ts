@@ -27,3 +27,23 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
 }
+
+export interface CostAnalysis {
+  totalCosts: number;
+  avgUtilization: number;
+  highestProvider: [string, number];
+  anomalies: CostData[];
+  recommendations: string[];
+}
+
+export interface ForecastAnalysis {
+  predictedCosts: number;
+  recommendedInstances: {
+    provider: string;
+    count: number;
+    duration: number;
+    potentialSavings: number;
+  }[];
+  utilizationTrend: "increasing" | "decreasing" | "stable";
+  recommendations: string[];
+}

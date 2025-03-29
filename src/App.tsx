@@ -4,10 +4,10 @@ import { AWSServicesChart } from "./components/AWSServicesChart";
 import { APIUsageTable } from "./components/APIUsageTable";
 import { Chatbot } from "./components/Chatbot";
 import toast from "react-hot-toast";
-import getAwsData from "./api/getAwsData";
-import getCostData from "./api/getCostData";
-import getForecastData from "./api/getForecastData";
-import getUsageData from "./api/getUsageData";
+import getAwsData from "./api/trends/getAwsData";
+import getCostData from "./api/trends/getCostData";
+import getForecastData from "./api/trends/getForecastData";
+import getUsageData from "./api/trends/getUsageData";
 import { APIUsage, AWSServiceData, CostData } from "./types";
 import Loader from "./components/Loader";
 
@@ -69,7 +69,12 @@ const App = () => {
         <div className="grid grid-cols-1 gap-8">
           <CostChart data={costData} title="Real-Time Cost vs Utilization" />
           <AWSServicesChart data={awsServicesData} />
-          <CostChart data={forecastData} title="Cost Forecast (Next 7 Days)" />
+          <CostChart
+            data={forecastData}
+            title="Cost Forecast (Next 7 Days)"
+            isForecast={true}
+            historicalData={costData}
+          />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <APIUsageTable data={apiUsageData} />
             <Chatbot />
