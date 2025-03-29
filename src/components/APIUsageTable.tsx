@@ -1,5 +1,5 @@
-import React from 'react';
-import { APIUsage } from '../types';
+import React from "react";
+import { APIUsage } from "../types";
 
 interface Props {
   data: APIUsage[];
@@ -35,7 +35,9 @@ export const APIUsageTable: React.FC<Props> = ({ data }) => {
               <tr key={index}>
                 <td className="px-6 py-4 whitespace-nowrap">{item.team}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{item.endpoint}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.calls.toLocaleString()}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {item.calls.toLocaleString()}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap">{item.latency}</td>
                 <td className="px-6 py-4 whitespace-nowrap">${item.cost}</td>
               </tr>

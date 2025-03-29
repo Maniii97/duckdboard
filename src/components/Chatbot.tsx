@@ -1,31 +1,33 @@
-import React, { useState } from 'react';
-import { ChatMessage } from '../types';
+import React, { useState } from "react";
+import { ChatMessage } from "../types";
 
 export const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      role: 'assistant',
-      content: 'Hello! I can help you analyze cloud costs and provide optimization recommendations. What would you like to know?'
-    }
+      role: "assistant",
+      content:
+        "Hello! I can help you analyze cloud costs and provide optimization recommendations. What would you like to know?",
+    },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
     const userMessage: ChatMessage = {
-      role: 'user',
-      content: input
+      role: "user",
+      content: input,
     };
 
     const assistantMessage: ChatMessage = {
-      role: 'assistant',
-      content: 'I apologize, but I am currently in demo mode. In a production environment, I would analyze your cloud costs and provide detailed recommendations.'
+      role: "assistant",
+      content:
+        "I apologize, but I am currently in demo mode. In a production environment, I would analyze your cloud costs and provide detailed recommendations.",
     };
 
     setMessages([...messages, userMessage, assistantMessage]);
-    setInput('');
+    setInput("");
   };
 
   return (
@@ -36,14 +38,14 @@ export const Chatbot: React.FC = () => {
           <div
             key={index}
             className={`mb-4 ${
-              message.role === 'user' ? 'text-right' : 'text-left'
+              message.role === "user" ? "text-right" : "text-left"
             }`}
           >
             <div
               className={`inline-block p-3 rounded-lg ${
-                message.role === 'user'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-800'
+                message.role === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-800"
               }`}
             >
               {message.content}
