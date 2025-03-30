@@ -1,7 +1,22 @@
-import React, { useState } from "react";
-import { ChatMessage } from "../types";
+import React, { useState, useRef, useEffect } from "react";
+import { APIUsage, AWSServiceData, ChatMessage } from "../types";
+import { CostData } from "../types";
+import handleChat from "../api/chat/chat";
+import ChatLoader from "./ChatLoader";
+import { set } from "date-fns";
 
-export const Chatbot: React.FC = () => {
+interface Props {
+  costData: CostData[];
+  awsServiceData: AWSServiceData[];
+  apiUsage: APIUsage[];
+}
+
+export const Chatbot: React.FC<Props> = ({
+  costData,
+  awsServiceData,
+  apiUsage,
+}) => {
+  let data = { costData, awsServiceData, apiUsage };
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
@@ -10,30 +25,46 @@ export const Chatbot: React.FC = () => {
     },
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const userMessage: ChatMessage = {
-      role: "user",
-      content: input,
-    };
+    const userMessage: ChatMessage = { role: "user", content: input };
+    setMessages((prev) => [...prev, userMessage]);
+
+    setInput("");
+
+    setIsLoading(true);
+    const question = input + " data : " + JSON.stringify(data);
+    const response = await handleChat(question);
 
     const assistantMessage: ChatMessage = {
       role: "assistant",
-      content:
-        "I apologize, but I am currently in demo mode. In a production environment, I would analyze your cloud costs and provide detailed recommendations.",
+      content: response,
     };
-
-    setMessages([...messages, userMessage, assistantMessage]);
-    setInput("");
+    setMessages((prev) => [...prev, assistantMessage]);
+    setIsLoading(false);
+    
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
+    <div className="bg-white p-6 rounded-lg shadow-lg h-[400px] flex flex-col">
       <h2 className="text-xl font-semibold mb-4">AI Cost Analysis Assistant</h2>
-      <div className="h-[300px] overflow-y-auto mb-4 border rounded-lg p-4">
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto mb-4 border rounded-lg p-4"
+      >
         {messages.map((message, index) => (
           <div
             key={index}
@@ -52,6 +83,7 @@ export const Chatbot: React.FC = () => {
             </div>
           </div>
         ))}
+        {isLoading && (<ChatLoader />)}
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input

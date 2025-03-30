@@ -77,7 +77,7 @@ const App = () => {
           />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <APIUsageTable data={apiUsageData} />
-            <Chatbot />
+            <Chatbot costData={costData} awsServiceData={awsServicesData} apiUsage={apiUsageData} />
           </div>
         </div>
       </div>
