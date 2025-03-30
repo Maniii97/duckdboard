@@ -35,6 +35,53 @@ export const Chatbot: React.FC<Props> = ({
     }
   }, [messages]);
 
+  const convertMarkdownToHtml = (markdown: string) => {
+    // Convert headings (e.g., ## Heading)
+    let html = markdown.replace(
+      /^(#{1,6})\s*(.*?)(\n|$)/gm,
+      (_match, hashes, title) => {
+        const level = hashes.length;
+        return `<h${level}>${title.trim()}</h${level}>`;
+      }
+    );
+
+    // Convert bold (**bold** or __bold__)
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/__(.*?)__/g, "<strong>$1</strong>");
+
+    // Convert italic (*italic* or _italic_)
+    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    html = html.replace(/_(.*?)_/g, "<em>$1</em>");
+
+    // Convert inline code (`code`)
+    html = html.replace(/`(.*?)`/g, "<code>$1</code>");
+
+    // Convert block math expressions (\[...\])
+    html = html.replace(
+      /\\\[(.*?)\\\]/gs,
+      '<div class="math-block">\\[$1\\]</div>'
+    );
+
+    // Convert inline math expressions (\(...\))
+    html = html.replace(
+      /\\\((.*?)\\\)/g,
+      '<span class="math-inline">\\($1\\)</span>'
+    );
+
+    // Convert unordered lists (* item)
+    html = html.replace(/^\s*\*\s+(.*)$/gm, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>\s*)+/g, "<ul>$&</ul>");
+
+    // Convert ordered lists (1. item)
+    html = html.replace(/^\s*\d+\.\s+(.*)$/gm, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>\s*)+/g, "<ol>$&</ol>");
+
+    // Replace newlines with <br> (if not already handled)
+    html = html.replace(/(?<!<\/(li|h[1-6]|div|ul|ol|span)>)\n/g, "<br>");
+
+    return html;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -54,7 +101,6 @@ export const Chatbot: React.FC<Props> = ({
     };
     setMessages((prev) => [...prev, assistantMessage]);
     setIsLoading(false);
-
   };
 
   return (
@@ -78,11 +124,19 @@ export const Chatbot: React.FC<Props> = ({
                   : "bg-gray-100 text-gray-800"
               }`}
             >
-              {message.content}
+              {message.role === "assistant" ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: convertMarkdownToHtml(message.content),
+                  }}
+                />
+              ) : (
+                message.content
+              )}
             </div>
           </div>
         ))}
-        {isLoading && (<ChatLoader />)}
+        {isLoading && <ChatLoader />}
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
