@@ -287,7 +287,7 @@ export const CostChart: React.FC<Props> = ({
                   i: React.Key | null | undefined
                 ) => (
                   <li key={i}>
-                    • {rec.provider}: {rec.count} instances for {rec.duration}h
+                    • {rec.provider}: {rec.count} instances for {rec.duration}days
                     (Save: ${rec.potentialSavings.toLocaleString()})
                   </li>
                 )
