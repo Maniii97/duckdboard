@@ -3,7 +3,6 @@ import { APIUsage, AWSServiceData, ChatMessage } from "../types";
 import { CostData } from "../types";
 import handleChat from "../api/chat/chat";
 import ChatLoader from "./ChatLoader";
-import { set } from "date-fns";
 
 interface Props {
   costData: CostData[];
@@ -55,7 +54,7 @@ export const Chatbot: React.FC<Props> = ({
     };
     setMessages((prev) => [...prev, assistantMessage]);
     setIsLoading(false);
-    
+
   };
 
   return (
